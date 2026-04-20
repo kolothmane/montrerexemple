@@ -1,11 +1,4 @@
-import dynamic from "next/dynamic";
 import Head from "next/head";
-import { useState } from "react";
-
-// Load ChatWidget client-side only (uses browser APIs)
-const ChatWidget = dynamic(() => import("../components/ChatWidget"), {
-  ssr: false,
-});
 
 // ─── Feature card ─────────────────────────────────────────────────────────────
 function FeatureCard({ icon, title, description }) {
@@ -39,10 +32,10 @@ function StepCard({ number, title, description }) {
 
 // ─── Main page ────────────────────────────────────────────────────────────────
 export default function Home() {
-  const [chatOpen, setChatOpen] = useState(false);
-
   const handleStartChat = () => {
-    setChatOpen(true);
+    if (typeof window !== "undefined" && window.embeddedservice_bootstrap?.utilAPI?.launchChat) {
+      window.embeddedservice_bootstrap.utilAPI.launchChat();
+    }
   };
 
   return (
@@ -324,8 +317,7 @@ export default function Home() {
         </footer>
       </div>
 
-      {/* ── Chat widget (floating) ── */}
-      <ChatWidget initialOpen={chatOpen} onOpenChange={(v) => !v && setChatOpen(false)} />
+      {/* ── Chat widget (Salesforce Embedded Messaging — injected via _app.js) ── */}
     </>
   );
 }
